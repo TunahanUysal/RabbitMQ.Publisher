@@ -5,35 +5,53 @@ using System.Text;
 
 ConnectionFactory connectionFactory = new();
 
-connectionFactory.Uri = new("amqpuri");
+connectionFactory.Uri = new("amqps://pntltxss:IMt0DR7p-3U2a7kzUjFVJCHEw9VttGiF@woodpecker.rmq.cloudamqp.com/pntltxss");
 
-// baglantıyı aktiflestirme ve kanal açma 
+// bağlantıyı aktiflestirme ve kanal açma 
 
 using IConnection connection = connectionFactory.CreateConnection();
 
 using IModel channel = connection.CreateModel();
 
-// Queue olusturma
+channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);
 
-channel.QueueDeclare(queue: "examplequeue", exclusive: false);
-
-// Queue ya mesaj gonderme
-
-// RabbitMQ kuyruğa atacağı mesajları byte türünden kabul etmektedir.Haliyle mesajları bizim byte türüne dönüsturmemiz gerekecektir.Default exchange direct exchangedir.
-
-//byte[] message=Encoding.UTF8.GetBytes("Merhaba");
-
-//channel.BasicPublish(exchange: "", routingKey: "examplequeue", body: message);
-
-for (int i = 0; i < 100; i++)
+while (true)
 {
-    await Task.Delay(2000);
+    Console.Write("Mesaj  :  ");
 
-    byte[] message = Encoding.UTF8.GetBytes("Merhaba" + i);
+    string message=Console.ReadLine();
 
-    channel.BasicPublish(exchange: "", routingKey: "examplequeue", body: message);
+    byte[] byteMessage=Encoding.UTF8.GetBytes(message);
+
+    channel.BasicPublish(exchange: "direct-exchange-example", routingKey: "direct-queue-example", body: byteMessage);
 }
+
+//// Queue olusturma
+
+//channel.QueueDeclare(queue: "examplequeue", exclusive: false,durable:true); // kuyrugun kalıcı olması için durable ozelligini aktif ettik.
+
+//// Queue ya mesaj gonderme
+
+//// RabbitMQ kuyruğa atacağı mesajları byte türünden kabul etmektedir.Haliyle mesajları bizim byte türüne dönüsturmemiz gerekecektir.Default exchange direct exchangedir.
+
+////byte[] message=Encoding.UTF8.GetBytes("Merhaba");
+
+////channel.BasicPublish(exchange: "", routingKey: "examplequeue", body: message);
+
+//IBasicProperties basicProperties=channel.CreateBasicProperties();   // mesajların kalıcı olması için gereken konfigurasyon 
+
+//basicProperties.Persistent = true;
+
+//for (int i = 0; i < 100; i++)
+//{
+//    await Task.Delay(2000);
+
+//    byte[] message = Encoding.UTF8.GetBytes("Merhaba" + i);
+
+//    channel.BasicPublish(exchange: "", routingKey: "examplequeue", body: message,basicProperties:basicProperties);
+//}
 
 
 
 Console.Read();
+
