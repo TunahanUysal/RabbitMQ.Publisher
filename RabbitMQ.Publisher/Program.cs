@@ -15,6 +15,7 @@ using IModel channel = connection.CreateModel();
 
 channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);
 
+//channel.BasicAck()
 while (true)
 {
     Console.Write("Mesaj  :  ");
