@@ -22,6 +22,8 @@ while (true)
 
     string message=Console.ReadLine();
 
+    
+
     byte[] byteMessage=Encoding.UTF8.GetBytes(message);
 
     channel.BasicPublish(exchange: "direct-exchange-example", routingKey: "direct-queue-example", body: byteMessage);
